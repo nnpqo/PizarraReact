@@ -66,6 +66,19 @@ const dibujar = (e) => {
 	
 };
 
+
+
+const dibujarImagen = (url) => {
+  console.log(url)
+
+  const ctx = canvasRef.current.getContext('2d');
+
+  var imageObj1 = new Image();
+  imageObj1.src = url
+  imageObj1.onload = function() {
+      ctx.drawImage(imageObj1,0,0);
+  }
+}
 const limpiar = () =>{
   const canvas = canvasRef.current;
   // eslint-disable-next-line
@@ -89,6 +102,7 @@ return (
 		cambiarGrosor={cambiarGrosor}
     limpiar={limpiar}
     cambiarHerramienta={cambiarHerramienta}
+    dibujarImagen={dibujarImagen}
 		/>
 	</div>
 );

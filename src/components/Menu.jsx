@@ -1,7 +1,15 @@
 import React from "react";
+import { useState } from "react";
 import "../App.css";
 
-const Menu = ({ cambiarColor, cambiarGrosor, limpiar, cambiarHerramienta }) => {
+
+const Menu = ({ cambiarColor, cambiarGrosor, limpiar, cambiarHerramienta, dibujarImagen }) => {
+	const [inputValue, setInputValue] = useState("");
+
+	const onChangeHandler = event => {
+		setInputValue(event.target.value);
+	};
+
 	return (
 		<div className="Menu">
 			<div id="Colores">
@@ -36,6 +44,11 @@ const Menu = ({ cambiarColor, cambiarGrosor, limpiar, cambiarHerramienta }) => {
 			<h2>Herramientas </h2>
 			<button onClick={() => cambiarHerramienta("lapiz")}>Lapiz</button>
 			<button onClick={() => cambiarHerramienta("cuadrado")}>Cuadrado</button>
+			<h2>Imagenes </h2>
+			<input type="text" value={inputValue}
+			      onCopy={onChangeHandler}
+				  onChange={onChangeHandler} name="name" />
+			<button onClick={() => dibujarImagen(inputValue)}>Agregar imagen</button>
 			</div>
 		</div>
 	);
