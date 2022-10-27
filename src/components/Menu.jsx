@@ -3,7 +3,7 @@ import { useState } from "react";
 import "../App.css";
 
 
-const Menu = ({ cambiarColor, cambiarGrosor, limpiar, cambiarHerramienta, dibujarImagen }) => {
+const Menu = ({ cambiarColor,cambiarRelleno, cambiarGrosor, limpiar, cambiarHerramienta, dibujarImagen }) => {
 	const [inputValue, setInputValue] = useState("");
 
 	const onChangeHandler = event => {
@@ -21,6 +21,7 @@ const Menu = ({ cambiarColor, cambiarGrosor, limpiar, cambiarHerramienta, dibuja
 				<button id="naranja" onClick={() => cambiarColor("orange")}></button>
 				<button id="negro" onClick={() => cambiarColor("black")}></button>
 			</div>
+			
 			<input
 				className="Colorea"
 				type="color"
@@ -38,12 +39,29 @@ const Menu = ({ cambiarColor, cambiarGrosor, limpiar, cambiarHerramienta, dibuja
 					cambiarGrosor(e.target.value);
 				}}
 			/>
+			<div id="Colores">
+				<h1>Relleno</h1>
+				<button id="rojo" onClick={() => cambiarRelleno("red")}></button>
+				<button id="amarillo" onClick={() => cambiarRelleno("yellow")}></button>
+				<button id="verde" onClick={() => cambiarRelleno("green")}></button>
+				<button id="azul" onClick={() => cambiarRelleno("blue")}></button>
+				<button id="naranja" onClick={() => cambiarRelleno("orange")}></button>
+				<button id="negro" onClick={() => cambiarRelleno("black")}></button>
+			</div>
+			<input
+				className="Colorea"
+				type="color"
+				onChange={(e) => {
+					cambiarRelleno(e.target.value);
+				}}
+			/>
 			<div className="Botones">
 			<button onClick={() => cambiarColor("white")}>Borrador</button>
 			<button onClick={() => limpiar()}>Limpiar</button>
 			<h2>Herramientas </h2>
 			<button onClick={() => cambiarHerramienta("lapiz")}>Lapiz</button>
 			<button onClick={() => cambiarHerramienta("cuadrado")}>Cuadrado</button>
+			<button onClick={() => cambiarHerramienta("triangulo")}>Triangulo</button>
 			<h2>Imagenes </h2>
 			<input type="text" value={inputValue}
 			      onCopy={onChangeHandler}
