@@ -19,6 +19,7 @@ const [grosor, cambiarGrosor] = useState(5);
 const [color, cambiarColor] = useState("black");
 const [relleno, cambiarRelleno] = useState("black");
 const [herramienta,cambiarHerramienta] = useState("lapiz");
+const [rotacion,cambiarRotacion]= useState("0")
 
 
 useEffect(() => {
@@ -69,8 +70,15 @@ const dibujar = (e) => {
       if(puedo){ctxRef.current.putImageData(imgData, 0, 
         0)}
       imgData = ctxRef.current.getImageData(0, 0,canvasRef.current.width,canvasRef.current.height);
+      
+      ctxRef.current.translate(x,y);
+      ctxRef.current.rotate(rotacion * Math.PI / 180);
+      ctxRef.current.translate(-x,-y);
       ctxRef.current.strokeRect(x,y,e.nativeEvent.offsetX-x,e.nativeEvent.offsetY-y);
       ctxRef.current.fillRect(x,y,e.nativeEvent.offsetX-x,e.nativeEvent.offsetY-y);
+      ctxRef.current.translate(x,y);
+      ctxRef.current.rotate(-rotacion * Math.PI / 180);
+      ctxRef.current.translate(-x,-y);
       puedo=true;
       console.log("????"+x+"????"+y)
     }
@@ -137,6 +145,7 @@ return (
     limpiar={limpiar}
     cambiarHerramienta={cambiarHerramienta}
     dibujarImagen={dibujarImagen}
+    cambiarRotacion={cambiarRotacion}
 		/>
 	</div>
 );

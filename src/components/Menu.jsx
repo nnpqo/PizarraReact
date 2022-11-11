@@ -4,7 +4,7 @@ import Paletas from "./Paletas";
 import "../App.css";
 
 
-const Menu = ({ cambiarColor,cambiarRelleno, cambiarGrosor, limpiar, cambiarHerramienta, dibujarImagen }) => {
+const Menu = ({ cambiarColor,cambiarRelleno, cambiarGrosor, limpiar, cambiarHerramienta, dibujarImagen,cambiarRotacion }) => {
 	const [inputValue, setInputValue] = useState("");
 
 	const onChangeHandler = event => {
@@ -33,7 +33,7 @@ const Menu = ({ cambiarColor,cambiarRelleno, cambiarGrosor, limpiar, cambiarHerr
 			/>
 
 			<div className="Botones">
-			<button onClick={() => cambiarColor("white")}>Borrador</button>
+			<button onClick={() => {cambiarColor("white");cambiarHerramienta("lapiz")}}>Borrador</button>
 			<button onClick={() => limpiar()}>Limpiar</button>
 			<h2>Herramientas </h2>
 			<button onClick={() => cambiarHerramienta("lapiz")}>Lapiz</button>
@@ -44,6 +44,16 @@ const Menu = ({ cambiarColor,cambiarRelleno, cambiarGrosor, limpiar, cambiarHerr
 			      onCopy={onChangeHandler}
 				  onChange={onChangeHandler} name="name" />
 			<button onClick={() => dibujarImagen(inputValue)}>Agregar imagen</button>
+			<input
+				className="Barra"
+				type="range"
+				min="0"
+				max="360"
+				onChange={(e) => {
+					cambiarRotacion(e.target.value);
+				}}
+			/>
+			
 			</div>
 		</div>
 	);

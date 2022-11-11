@@ -1,8 +1,7 @@
 import React from "react";
 const indexedDb = window.indexedDB;
-let nElemts=0;
 let db
-
+let nElem=0;
 const conexion = indexedDb.open('listaLienzos', 1)
 
 conexion.onsuccess = () => {
@@ -14,7 +13,7 @@ conexion.onsuccess = () => {
 conexion.onupgradeneeded = (e) => {
     db = e.target.result
     console.log('Base de datos creada', db)
-    const coleccionObjetos = db.createObjectStore('lienzos')
+    const coleccionObjetos = db.createObjectStore('lienzos',{ autoIncrement: true })
 }
 
 conexion.onerror = (error) => {
@@ -23,12 +22,12 @@ conexion.onerror = (error) => {
 
 const agregar = (canvas) => {
     const trasaccion = db.transaction(['lienzos'], 'readwrite')
-    const coleccionObjetos = trasaccion.objectStore('lienzos',{ autoIncrement: true })
+    const coleccionObjetos = trasaccion.objectStore('lienzos')
     var canvasContents = canvas.toDataURL();
     var data = { image: canvasContents };
     var string = JSON.stringify(data);
-    const conexion = coleccionObjetos.add(string,nElemts)
-    nElemts++
+    const conexion = coleccionObjetos.put(string,nElem)
+    nElem++
     consultar()
 }
 
@@ -101,8 +100,7 @@ const Guardado = ({ canvas }) => {
     return (
         <div className="guardado">
             <button id="botonGuardar" onClick={() => agregar(canvas)}>Guardar</button>
-            <button id="botonCargar" onClick={() => obtener(nElemts-1, canvas)}>Cargar</button>
-
+            <button id="botonCargar" onClick={() => obtener(nElem-1, canvas)}>Cargar</button>
         </div>
     )
 }
