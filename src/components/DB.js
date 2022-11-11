@@ -44,8 +44,6 @@ const obtener = (clave,canvas) =>{
             console.log("data") 
          }
          image.src = data.image;
-         
-        
     }
     
     
