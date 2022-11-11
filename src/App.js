@@ -20,6 +20,10 @@ function App() {
   const [relleno, cambiarRelleno] = useState("black");
   const [herramienta, cambiarHerramienta] = useState("lapiz");
 
+  var startX;
+  var startY;
+  var selectedText=-1;
+  var textos = [];
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -33,6 +37,19 @@ function App() {
   }, [color, grosor, relleno]);
 
   const iniciarDibujo = (e) => {
+    e.preventDefault();
+    startX = parseInt(e.clientX - e.nativeEvent.offsetX);
+    startY = parseInt(e.clientY - e.nativeEvent.offsetY);
+
+    console.log("imprimiendo tamano" + textos.length)
+    for (var i = 0; i < textos.length; i++) {
+      console.log("checking hit")
+      if (textHittest(startX, startY, i)) {
+        console.log("hitted")
+        selectedText = i;
+      }
+    }
+
     cambiarx(e.nativeEvent.offsetX);
     cambiary(e.nativeEvent.offsetY);
     x1 = e.nativeEvent.offsetX;
@@ -49,15 +66,45 @@ function App() {
     }
   };
 
-  const terminarDibujo = () => {
+  const terminarDibujo = (e) => {
     puedo = false;
     cambiarDibujando(false);
     ctxRef.current.closePath();
-
+    e.preventDefault();
+    selectedText = -1;
   };
 
+  function draw(){
+    var ctx =  canvasRef.current.getContext("2d");
+    ctx.clearRect(0,0,canvasRef.current.width, canvasRef.current.height);
+    for(var i=0;i<textos.length;i++){
+        var text=textos[i];
+        ctx.fillText(text.text,text.x,text.y);
+    }
+}
+
   const dibujar = (e) => {
-    if (!dibujando) { return; }
+    if (!dibujando) {
+      if (selectedText < 0) { return; }
+      e.preventDefault();
+      // const canvasOffset=canvasRef.current.offset;
+      // var offsetX=canvasOffset.left;
+      // var offsetY=canvasOffset.top;
+      var mouseX = parseInt(e.clientX - e.nativeEvent.offsetX);
+      var mouseY = parseInt(e.clientY - e.nativeEvent.offsetY);
+
+      // Put your mousemove stuff here
+      var dx = mouseX - startX;
+      var dy = mouseY - startY;
+      startX = mouseX;
+      startY = mouseY;
+
+      var text = textos[selectedText];
+      text.x += dx;
+      text.y += dy;
+      draw();
+      return;
+    }
 
     if (herramienta === "lapiz") {
       ctxRef.current.lineTo(
@@ -65,43 +112,38 @@ function App() {
         e.nativeEvent.offsetY
       );
       ctxRef.current.stroke();
-    }
-    if (herramienta === "cuadrado") {
-      if (puedo) {
-        ctxRef.current.putImageData(imgData, 0,
-          0)
-      }
-      imgData = ctxRef.current.getImageData(0, 0, canvasRef.current.width, canvasRef.current.height);
-      ctxRef.current.strokeRect(x, y, e.nativeEvent.offsetX - x, e.nativeEvent.offsetY - y);
-      ctxRef.current.fillRect(x, y, e.nativeEvent.offsetX - x, e.nativeEvent.offsetY - y);
-      puedo = true;
-      console.log("????" + x + "????" + y)
-    }
-    if (herramienta === "triangulo") {
-      ctxRef.current.beginPath()
-      if (puedo) { ctxRef.current.putImageData(imgData, 0, 0); }
-      imgData = ctxRef.current.getImageData(0, 0, canvasRef.current.width, canvasRef.current.height);
+        }
+        if (herramienta === "cuadrado") {
+          if (puedo) {
+            ctxRef.current.putImageData(imgData, 0,
+              0)
+          }
+          imgData = ctxRef.current.getImageData(0, 0, canvasRef.current.width, canvasRef.current.height);
+          ctxRef.current.strokeRect(x, y, e.nativeEvent.offsetX - x, e.nativeEvent.offsetY - y);
+          ctxRef.current.fillRect(x, y, e.nativeEvent.offsetX - x, e.nativeEvent.offsetY - y);
+          puedo = true;
+          console.log("????" + x + "????" + y)
+        }
+        if (herramienta === "triangulo") {
+          ctxRef.current.beginPath()
+          if (puedo) { ctxRef.current.putImageData(imgData, 0, 0); }
+          imgData = ctxRef.current.getImageData(0, 0, canvasRef.current.width, canvasRef.current.height);
 
-      ctxRef.fillStyle = "black";
-      ctxRef.current.moveTo(x, e.nativeEvent.offsetY);
-      ctxRef.current.lineTo(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
-      ctxRef.current.lineTo(e.nativeEvent.offsetX - (e.nativeEvent.offsetX - x) / 2, y);
-      ctxRef.current.fill();
-      ctxRef.current.closePath();
-      ctxRef.current.stroke();
-      puedo = true;
-      console.log((e.nativeEvent.offsetX - x1) + "y" + y1);
-    }
-
-
-
-
-  };
+          ctxRef.fillStyle = "black";
+          ctxRef.current.moveTo(x, e.nativeEvent.offsetY);
+          ctxRef.current.lineTo(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
+          ctxRef.current.lineTo(e.nativeEvent.offsetX - (e.nativeEvent.offsetX - x) / 2, y);
+          ctxRef.current.fill();
+          ctxRef.current.closePath();
+          ctxRef.current.stroke();
+          puedo = true;
+          console.log((e.nativeEvent.offsetX - x1) + "y" + y1);
+        }
+      };
 
 
 
-  const dibujarImagen = (url) => {
-    console.log(url)
+      const dibujarImagen = (url) => {
 
     const ctx = canvasRef.current.getContext('2d');
 
@@ -112,6 +154,39 @@ function App() {
       ctx.drawImage(imageObj1, 0, 0);
     }
   }
+
+
+  const dibujarTexto = (texto) => {
+    textos.push({ text: texto, x: Math.floor(Math.random() * 1000), y: Math.floor(Math.random() * 1000) });
+    const canvas = canvasRef.current;
+
+    var ctx = canvas.getContext("2d");
+    ctx.font = "16px verdana";
+
+
+    for (var i = 0; i < textos.length; i++) {
+      var text = textos[i];
+      text.width = ctx.measureText(text.text).width;
+      text.height = 16;
+    }
+
+    console.log(textos)
+    ctx.clearRect(0, 0, canvasRef.width, canvasRef.height);
+    for (var i = 0; i < textos.length; i++) {
+      var text = textos[i];
+      ctx.fillText(text.text, text.x, text.y);
+    }
+  }
+
+  function textHittest(x, y, textIndex) {
+    var text = textos[textIndex];
+    return (x >= text.x &&
+      x <= text.x + text.width &&
+      y >= text.y - text.height &&
+      y <= text.y);
+  }
+
+
   const limpiar = () => {
     const canvas = canvasRef.current;
     // eslint-disable-next-line
@@ -140,6 +215,7 @@ function App() {
         limpiar={limpiar}
         cambiarHerramienta={cambiarHerramienta}
         dibujarImagen={dibujarImagen}
+        agregarTexto={dibujarTexto}
       />
     </div>
   );
