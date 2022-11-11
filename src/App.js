@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import Menu from "./components/Menu";
 import Guardado from "./components/DB";
+import ListaLienzos from "./components/ListaLienzos";
 import "./App.css";
+
 
 function App() {
 const canvasRef = useRef(null);
@@ -113,32 +115,10 @@ const limpiar = () =>{
   canvas.width=canvas.width;  
 }
 
-const guardar=() =>{
-  
-  var canvasContents = canvasRef.current.toDataURL(); 
-  var data = { image: canvasContents };
-  var string = JSON.stringify(data);
-
-  localStorage.setItem('lienzo'+numCaptura,string);
-  cambiarNum(numCaptura+1);
-}
-
-const cargar=(n) =>{
-  var lienzo = localStorage.getItem('lienzo'+n)
-  var data = JSON.parse(lienzo);
-  var image = new Image();
-  image.onload = function () {
-    ctxRef.current.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
-    ctxRef.current.drawImage(image, 0, 0); 
-  }
-  image.src = data.image;
-}
 return (
 	<div className="App">
-		
+    <ListaLienzos/>
     <Guardado
-    guardar={guardar}
-    cargar={cargar}
     canvas={canvasRef.current}
     />
 		<canvas
