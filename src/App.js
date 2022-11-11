@@ -1,14 +1,17 @@
 import { useEffect, useRef, useState } from "react";
 import Menu from "./components/Menu";
+import Guardado from "./components/DB";
 import "./App.css";
 
 function App() {
 const canvasRef = useRef(null);
 const ctxRef = useRef(null);
 var puedo=false,imgData;
+//var numCaptura=0;
 let x1,y1;
-const [x,cambiarx]=useState(100);
-const [y,cambiary]=useState(100);
+const [numCaptura,cambiarNum]=useState(0);
+const [x,cambiarx]=useState(null);
+const [y,cambiary]=useState(null);
 const [dibujando, cambiarDibujando] = useState(false);
 const [grosor, cambiarGrosor] = useState(5);
 const [color, cambiarColor] = useState("black");
@@ -32,12 +35,13 @@ const iniciarDibujo = (e) => {
   cambiary(e.nativeEvent.offsetY);
   x1=e.nativeEvent.offsetX;
   y1=e.nativeEvent.offsetY;
-  console.log(x1+"y"+y1);
+  console.log("x="+x+"y="+y);
+  console.log("x1="+x1+"y1="+y1);
   cambiarDibujando(true);
   ;
   if(herramienta==="lapiz"){	
     ctxRef.current.beginPath()
-	ctxRef.current.moveTo(e.nativeEvent.offsetX,e.nativeEvent.offsety);
+	ctxRef.current.moveTo(x1,y1);
   }
   if(herramienta==="triangulo"){	
     }
@@ -62,7 +66,7 @@ const dibujar = (e) => {
     if(herramienta==="cuadrado"){
       if(puedo){ctxRef.current.putImageData(imgData, 0, 
         0)}
-      imgData = ctxRef.current.getImageData(0, 0, 1000, 700);
+      imgData = ctxRef.current.getImageData(0, 0,canvasRef.current.width,canvasRef.current.height);
       ctxRef.current.strokeRect(x,y,e.nativeEvent.offsetX-x,e.nativeEvent.offsetY-y);
       ctxRef.current.fillRect(x,y,e.nativeEvent.offsetX-x,e.nativeEvent.offsetY-y);
       puedo=true;
@@ -71,7 +75,7 @@ const dibujar = (e) => {
     if(herramienta==="triangulo"){
       ctxRef.current.beginPath()
       if(puedo){ctxRef.current.putImageData(imgData, 0, 0);}
-      imgData = ctxRef.current.getImageData(0, 0, 1000, 700);
+      imgData = ctxRef.current.getImageData(0, 0, canvasRef.current.width,canvasRef.current.height);
       
       ctxRef.fillStyle="black";
       ctxRef.current.moveTo(x,e.nativeEvent.offsetY);
@@ -98,6 +102,7 @@ const dibujarImagen = (url) => {
 
   var imageObj1 = new Image();
   imageObj1.src = url
+  imageObj1.setAttribute('crossOrigin', '');
   imageObj1.onload = function() {
       ctx.drawImage(imageObj1,0,0);
   }
@@ -108,9 +113,34 @@ const limpiar = () =>{
   canvas.width=canvas.width;  
 }
 
+const guardar=() =>{
+  
+  var canvasContents = canvasRef.current.toDataURL(); 
+  var data = { image: canvasContents };
+  var string = JSON.stringify(data);
+
+  localStorage.setItem('lienzo'+numCaptura,string);
+  cambiarNum(numCaptura+1);
+}
+
+const cargar=(n) =>{
+  var lienzo = localStorage.getItem('lienzo'+n)
+  var data = JSON.parse(lienzo);
+  var image = new Image();
+  image.onload = function () {
+    ctxRef.current.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+    ctxRef.current.drawImage(image, 0, 0); 
+  }
+  image.src = data.image;
+}
 return (
 	<div className="App">
 		
+    <Guardado
+    guardar={guardar}
+    cargar={cargar}
+    canvas={canvasRef.current}
+    />
 		<canvas
 		onMouseDown={iniciarDibujo}
 		onMouseUp={terminarDibujo}
