@@ -22,6 +22,14 @@ h2{
 .Colorea{
   margin: 8px;
 }
+.DB{
+  display: flex;
+  flex-direction: column;
+  height: 700px;
+    width: 10%;
+	background-color: paleturquoise;
+	padding-top: 10px;
+}
 .Menu {
 	display: flex;
   flex-direction:column ;

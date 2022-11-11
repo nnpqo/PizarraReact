@@ -98,9 +98,13 @@ const consultar = () => {
 
 const Guardado = ({ canvas }) => {
     return (
-        <div className="guardado">
+        <div className="DB">
+        <div className="Botones">
             <button id="botonGuardar" onClick={() => agregar(canvas)}>Guardar</button>
-            <button id="botonCargar" onClick={() => obtener(nElem-1, canvas)}>Cargar</button>
+            
+            <button id="botonCargar" onClick={() => obtener(nElem-1, canvas)}>Cargar Ultimo</button>
+            <label></label>
+        </div>
         </div>
     )
 }

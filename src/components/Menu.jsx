@@ -4,9 +4,12 @@ import Paletas from "./Paletas";
 import "../App.css";
 
 
-const Menu = ({ cambiarColor,cambiarRelleno, cambiarGrosor, limpiar, cambiarHerramienta, dibujarImagen,cambiarRotacion }) => {
+const Menu = ({ cambiarColor,cambiarRelleno, cambiarGrosor, limpiar, cambiarHerramienta, dibujarImagen,cambiarRotacion,agregarTexto }) => {
 	const [inputValue, setInputValue] = useState("");
-
+	const [inputValueText, setInputValueText] = useState("");
+	const onChangeHandlerTexto = event => {
+		setInputValueText(event.target.value);
+	};
 	const onChangeHandler = event => {
 		setInputValue(event.target.value);
 	};
@@ -27,9 +30,20 @@ const Menu = ({ cambiarColor,cambiarRelleno, cambiarGrosor, limpiar, cambiarHerr
 					cambiarGrosor(e.target.value);
 				}}
 			/>
+			
 			<Paletas
 			titulo={"Relleno"}
 			cambio={cambiarRelleno}
+			/>
+			<h1>Angulo</h1>
+			<input
+				className="Barra"
+				type="range"
+				min="0"
+				max="360"
+				onChange={(e) => {
+					cambiarRotacion(e.target.value);
+				}}
 			/>
 
 			<div className="Botones">
@@ -44,15 +58,12 @@ const Menu = ({ cambiarColor,cambiarRelleno, cambiarGrosor, limpiar, cambiarHerr
 			      onCopy={onChangeHandler}
 				  onChange={onChangeHandler} name="name" />
 			<button onClick={() => dibujarImagen(inputValue)}>Agregar imagen</button>
-			<input
-				className="Barra"
-				type="range"
-				min="0"
-				max="360"
-				onChange={(e) => {
-					cambiarRotacion(e.target.value);
-				}}
-			/>
+			<h2>Texto </h2>
+			<input type="text" value={inputValueText}
+			      onCopy={onChangeHandlerTexto}
+				  onChange={onChangeHandlerTexto} name="name" />
+			<button onClick={() => agregarTexto(inputValueText)}>Agregar texto</button>
+			
 			
 			</div>
 		</div>

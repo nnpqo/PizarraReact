@@ -20,6 +20,10 @@ const [color, cambiarColor] = useState("black");
 const [relleno, cambiarRelleno] = useState("black");
 const [herramienta,cambiarHerramienta] = useState("lapiz");
 const [rotacion,cambiarRotacion]= useState("0")
+var startX;
+  var startY;
+  var selectedText=-1;
+  var textos = [];
 
 
 useEffect(() => {
@@ -34,6 +38,19 @@ useEffect(() => {
 }, [color,  grosor,relleno]);
 
 const iniciarDibujo = (e) => {
+  e.preventDefault();
+    startX = parseInt(e.clientX - e.nativeEvent.offsetX);
+    startY = parseInt(e.clientY - e.nativeEvent.offsetY);
+
+    console.log("imprimiendo tamano" + textos.length)
+    for (var i = 0; i < textos.length; i++) {
+      console.log("checking hit")
+      if (textHittest(startX, startY, i)) {
+        console.log("hitted")
+        selectedText = i;
+      }
+    }
+
   cambiarx(e.nativeEvent.offsetX);
   cambiary(e.nativeEvent.offsetY);
   x1=e.nativeEvent.offsetX;
@@ -50,15 +67,43 @@ const iniciarDibujo = (e) => {
     }
 };
 
-const terminarDibujo = () => {
+const terminarDibujo = (e) => {
 	puedo=false;
 	cambiarDibujando(false);
     ctxRef.current.closePath();
-  
+    e.preventDefault();
+    selectedText = -1;
 };
-
+function draw(){
+  var ctx =  canvasRef.current.getContext("2d");
+  ctx.clearRect(0,0,canvasRef.current.width, canvasRef.current.height);
+  for(var i=0;i<textos.length;i++){
+      var text=textos[i];
+      ctx.fillText(text.text,text.x,text.y);
+  }
+}
 const dibujar = (e) => {
-	if (!dibujando) {return;}
+	if (!dibujando) {
+    if (selectedText < 0) { return; }
+    e.preventDefault();
+    // const canvasOffset=canvasRef.current.offset;
+    // var offsetX=canvasOffset.left;
+    // var offsetY=canvasOffset.top;
+    var mouseX = parseInt(e.clientX - e.nativeEvent.offsetX);
+    var mouseY = parseInt(e.clientY - e.nativeEvent.offsetY);
+
+    // Put your mousemove stuff here
+    var dx = mouseX - startX;
+    var dy = mouseY - startY;
+    startX = mouseX;
+    startY = mouseY;
+
+    var text = textos[selectedText];
+    text.x += dx;
+    text.y += dy;
+    draw();
+    return;
+  }
   
     if(herramienta==="lapiz"){
     ctxRef.current.lineTo(
@@ -117,6 +162,35 @@ const dibujarImagen = (url) => {
       ctx.drawImage(imageObj1,0,0);
   }
 }
+const dibujarTexto = (texto) => {
+  textos.push({ text: texto, x: Math.floor(Math.random() * 1000), y: Math.floor(Math.random() * 1000) });
+  const canvas = canvasRef.current;
+
+  var ctx = canvas.getContext("2d");
+  ctx.font = "16px verdana";
+
+
+  for (var i = 0; i < textos.length; i++) {
+    var text = textos[i];
+    text.width = ctx.measureText(text.text).width;
+    text.height = 16;
+  }
+
+  console.log(textos)
+  ctx.clearRect(0, 0, canvasRef.width, canvasRef.height);
+  for (var i = 0; i < textos.length; i++) {
+    var text = textos[i];
+    ctx.fillText(text.text, text.x, text.y);
+  }
+}
+
+function textHittest(x, y, textIndex) {
+  var text = textos[textIndex];
+  return (x >= text.x &&
+    x <= text.x + text.width &&
+    y >= text.y - text.height &&
+    y <= text.y);
+}
 const limpiar = () =>{
   const canvas = canvasRef.current;
   // eslint-disable-next-line
@@ -146,6 +220,7 @@ return (
     cambiarHerramienta={cambiarHerramienta}
     dibujarImagen={dibujarImagen}
     cambiarRotacion={cambiarRotacion}
+    agregarTexto={dibujarTexto}
 		/>
 	</div>
 );
