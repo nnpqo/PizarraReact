@@ -2,9 +2,10 @@ import React from "react";
 import { useState } from "react";
 import Paletas from "./Paletas";
 import "../App.css";
+import Guardado from "./DB";
 
 
-const Menu = ({ cambiarColor,cambiarRelleno, cambiarGrosor, limpiar, cambiarHerramienta, dibujarImagen,agregarTexto }) => {
+const Menu = ({ cambiarColor,cambiarRelleno, cambiarGrosor, limpiar, cambiarHerramienta, dibujarImagen,agregarTexto, canvas}) => {
 	const [inputValue, setInputValue] = useState("");
 	const [inputValueText, setInputValueText] = useState("");
 
@@ -55,6 +56,9 @@ const Menu = ({ cambiarColor,cambiarRelleno, cambiarGrosor, limpiar, cambiarHerr
 			      onCopy={onChangeHandlerTexto}
 				  onChange={onChangeHandlerTexto} name="name" />
 			<button onClick={() => agregarTexto(inputValueText)}>Agregar texto</button>
+			<Guardado
+      		  canvas={canvas}
+      		/>
 			</div>
 		</div>
 	);

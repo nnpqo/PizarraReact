@@ -19,6 +19,8 @@ function App() {
   const [color, cambiarColor] = useState("black");
   const [relleno, cambiarRelleno] = useState("black");
   const [herramienta, cambiarHerramienta] = useState("lapiz");
+  const [guardar, guardarLienzo] = useState(null);
+  const [cargar, cargarLienzo] = useState(null);
 
   var startX;
   var startY;
@@ -196,9 +198,6 @@ function App() {
   return (
     <div className="App">
       <ListaLienzos />
-      <Guardado
-        canvas={canvasRef.current}
-      />
       <canvas
         onMouseDown={iniciarDibujo}
         onMouseUp={terminarDibujo}
@@ -216,6 +215,7 @@ function App() {
         cambiarHerramienta={cambiarHerramienta}
         dibujarImagen={dibujarImagen}
         agregarTexto={dibujarTexto}
+        canvas = {canvasRef.current}
       />
     </div>
   );
