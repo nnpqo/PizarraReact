@@ -3,6 +3,7 @@ import Menu from "./components/Menu";
 import Guardado from "./components/DB";
 import ListaLienzos from "./components/ListaLienzos";
 import "./App.css";
+import {io} from 'socket.io-client';
 
 
 function App() {
@@ -27,6 +28,11 @@ var startX;
 
 
 useEffect(() => {
+  const socket = io('http://localhost:5000')
+    socket.on('connect', ()=>console.log(socket.id))
+    socket.on('connect_error', ()=>{
+      //setTimeout(()=>socket.connect(),5000)
+    })
 	const canvas = canvasRef.current;
 	const ctx = canvas.getContext("2d");
 	ctx.lineCap = "round";
