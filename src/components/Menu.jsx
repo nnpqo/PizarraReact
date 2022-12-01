@@ -4,7 +4,7 @@ import Paletas from "./Paletas";
 import "../App.css";
 
 
-const Menu = ({ cambiarColor,cambiarRelleno, cambiarGrosor, limpiar, cambiarHerramienta, dibujarImagen,cambiarRotacion,agregarTexto }) => {
+const Menu = ({ cambiarColor,cambiarRelleno, cambiarGrosor, limpiar, cambiarHerramienta, dibujarImagen,cambiarRotacion,agregarTexto, cargarImagen }) => {
 	const [inputValue, setInputValue] = useState("");
 	const [inputValueText, setInputValueText] = useState("");
 	const onChangeHandlerTexto = event => {
@@ -58,6 +58,7 @@ const Menu = ({ cambiarColor,cambiarRelleno, cambiarGrosor, limpiar, cambiarHerr
 			      onCopy={onChangeHandler}
 				  onChange={onChangeHandler} name="name" />
 			<button onClick={() => dibujarImagen(inputValue)}>Agregar imagen</button>
+			<input type="file"  onChange={cargarImagen}></input>                               
 			<h2>Texto </h2>
 			<input type="text" value={inputValueText}
 			      onCopy={onChangeHandlerTexto}
