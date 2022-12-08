@@ -4,14 +4,17 @@ import Guardado from "./components/DB";
 import ListaLienzos from "./components/ListaLienzos";
 import "./App.css";
 import {io} from 'socket.io-client';
+import socketIOClient from "socket.io-client";
 
 
+const socket = socketIOClient('http://localhost:5000');
 function App() {
 const canvasRef = useRef(null);
 const ctxRef = useRef(null);
 var puedo=false,imgData;
 //var numCaptura=0;
 let x1,y1;
+const miId=socket.id;
 const [numCaptura,cambiarNum]=useState(0);
 const [x,cambiarx]=useState(null);
 const [y,cambiary]=useState(null);
@@ -21,27 +24,51 @@ const [color, cambiarColor] = useState("black");
 const [relleno, cambiarRelleno] = useState("black");
 const [herramienta,cambiarHerramienta] = useState("lapiz");
 const [rotacion,cambiarRotacion]= useState("0")
+const [control,cambiarcontrol]= useState("null")
 var startX;
   var startY;
   var selectedText=-1;
   var textos = [];
 
-
 useEffect(() => {
-  const socket = io('http://localhost:5000')
-    socket.on('connect', ()=>console.log(socket.id))
-    socket.on('connect_error', ()=>{
-      //setTimeout(()=>socket.connect(),5000)
-    })
-	const canvas = canvasRef.current;
+  
+  const canvas = canvasRef.current;
 	const ctx = canvas.getContext("2d");
 	ctx.lineCap = "round";
 	ctx.lineJoin = "round";
 	ctx.strokeStyle = color;
   ctx.fillStyle = relleno;
 	ctx.lineWidth = grosor;
-	ctxRef.current = ctx;
-}, [color,  grosor,relleno]);
+	ctxRef.current = ctx; 
+
+  socket.on('connect', ()=>console.log(socket.id))
+  socket.on('connect_error', ()=>{
+      setTimeout(()=>socket.connect(),5000)
+  })
+  socket.on('terminado', data => {
+    //console.log('miId=',miId," control=",control,"data=")
+    var dataa = JSON.parse(data.lienzoActual);
+    var image = new Image();
+    image.onload = function () {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(image, 0, 0);
+  }
+  image.src = dataa.image;
+    console.log("hay cambios")
+  });
+  socket.on('control', (data)=>{
+    cambiarcontrol(data.control);
+    console.log('miId=',miId," control=",control,"data=",data.control)
+})
+  return () => {
+    socket.off('connect');
+    socket.off('terminado');
+  };
+
+}, [color,grosor,relleno,control]);
+
+
+
 
 const iniciarDibujo = (e) => {
   e.preventDefault();
@@ -79,6 +106,11 @@ const terminarDibujo = (e) => {
     ctxRef.current.closePath();
     e.preventDefault();
     selectedText = -1;
+
+    var canvasContents = canvasRef.current.toDataURL();
+    var data = { image: canvasContents };
+    var string = JSON.stringify(data);
+    socket.emit('terminado', { lienzoActual: string });
 };
 function draw(){
   var ctx =  canvasRef.current.getContext("2d");
@@ -202,13 +234,13 @@ const limpiar = () =>{
   // eslint-disable-next-line
   canvas.width=canvas.width;  
 }
-
-return (
-	<div className="App">
-    <ListaLienzos/>
+/*<ListaLienzos/>
     <Guardado
     canvas={canvasRef.current}
-    />
+    />*/
+return (
+	<div className="App">
+    
 		<canvas
 		onMouseDown={iniciarDibujo}
 		onMouseUp={terminarDibujo}
