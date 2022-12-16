@@ -1,6 +1,7 @@
 module.exports = io => {
 
   const usuarios= [];
+  const connections = {};
 
   /*for(let [id,socket] of io.sockets){
     usuarios.push({
@@ -11,14 +12,16 @@ module.exports = io => {
 
   io.on('connection', socket => {
     console.log("nuevo cliente =",socket.id);
-   
-    usuarios.push(socket.id);
-    socket.emit('control', { control: usuarios[0] });
-    for (let i in usuarios) {
-      console.log('usuario',usuarios[i]);
-    }
+    socket.on('join room', (roomId) => {
+      connections[socket.id] = roomId;
+      console.log(socket.id+ 'se unio a sala '+roomId);
+      socket.join(roomId);
+      io.to(roomId).emit('terminado', { lienzoActual: data.lienzoActual });
+    });
+
     socket.on('terminado', data=>{
-      socket.broadcast.emit('terminado', { lienzoActual: data.lienzoActual });
+      const roomId = connections[socket.id];
+      io.to(roomId).emit('terminado', { lienzoActual: data.lienzoActual });
     })
   });
 

@@ -8,6 +8,9 @@ import socketIOClient from "socket.io-client";
 
 
 const socket = socketIOClient('http://localhost:5000');
+const pathname = window.location.pathname;
+const roomId = pathname.split('/')[1];
+
 function App() {
 const canvasRef = useRef(null);
 const ctxRef = useRef(null);
@@ -41,8 +44,15 @@ useEffect(() => {
 	ctx.lineWidth = grosor;
 	ctxRef.current = ctx; 
 
-  socket.on('connect', ()=>console.log(socket.id))
+  socket.on('connect', ()=>{
+    console.log(socket.id)
+    socket.emit('join room', roomId);
+    alert(`The name you entered was: ${ window.location.pathname}`);
+  }
+    )
+  
   socket.on('connect_error', ()=>{
+    
       setTimeout(()=>socket.connect(),5000)
   })
   socket.on('terminado', data => {
@@ -56,6 +66,7 @@ useEffect(() => {
   image.src = dataa.image;
     console.log("hay cambios")
   });
+  
   socket.on('control', (data)=>{
     cambiarcontrol(data.control);
     console.log('miId=',miId," control=",control,"data=",data.control)
