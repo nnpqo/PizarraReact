@@ -1,19 +1,19 @@
 //import { Router } from "express";
 import React from "react";
-import { useEffect, useRef, useState } from "react";
-import ReactDOM from 'react-dom/client';
+import { useState } from "react";
 import './inicio.css';
-import App from '../App';
-import { BrowserRouter, Route,Routes, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 function Inicio  () {
+    const navigate = useNavigate();
+
     const [name, setName] = useState("");
     const [room, setRoom] = useState("");
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    alert(`The name you entered was: ${ window.location.pathname}`);
-
-  }
+    const handleSubmit = (event) => {
+        event.preventDefault();
+        navigate(`/${room}`);
+      }
+      
     return (
             <div id="login-box">
                 <h1>Login</h1>
@@ -35,12 +35,10 @@ function Inicio  () {
                                 onChange={(e) => setRoom(e.target.value)}
                             />
                         </label>
-                        <input type="submit" />
+                        <input type="submit" id="boton"/>
                     </form>
 
                 </div>
-
-                <button type="submit">Login</button> 
             </div>
     )
 }
