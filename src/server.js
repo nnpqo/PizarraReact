@@ -2,6 +2,7 @@ const express = require('express');
 const http = require('http');
 const socketIO = require('socket.io');
 var cors = require('cors');
+const mongoose = require('./database');
 
 // intializations
 const app = express();
